@@ -1,0 +1,38 @@
+{
+    "name": "urlcv/smart-url-shortener",
+    "description": "2026-style smart short-link concept tool (frontend-only) for exploring branded trust, previews, routing, QR, analytics and anti-abuse UX.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["url-shortener", "smart-link", "branded-links", "qr", "routing", "utm", "anti-abuse", "phishing", "preview-page"],
+    "homepage": "https://urlcv.com/tools/smart-url-shortener",
+    "authors": [
+        {
+            "name": "URLCV",
+            "homepage": "https://urlcv.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "suggest": {
+        "illuminate/support": "Required for Laravel integration (Blade views)"
+    },
+    "autoload": {
+        "psr-4": {
+            "URLCV\\SmartUrlShortener\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "URLCV\\SmartUrlShortener\\Laravel\\SmartUrlShortenerServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}
+
