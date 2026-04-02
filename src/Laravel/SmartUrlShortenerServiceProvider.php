@@ -97,7 +97,7 @@ class SmartUrlShortenerServiceProvider extends ServiceProvider
                 $clicks = $link->clicks()->selectRaw('
                     COUNT(*) as total,
                     COUNT(DISTINCT ip_hash) as unique_clicks,
-                    SUM(CASE WHEN is_preview = 0 THEN 1 ELSE 0 END) as redirects
+                    SUM(CASE WHEN is_preview = false THEN 1 ELSE 0 END) as redirects
                 ')->first();
 
                 $devices = $link->clicks()
