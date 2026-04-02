@@ -81,7 +81,7 @@ class SmartUrlShortenerServiceProvider extends ServiceProvider
                 ]);
             }
         )
-        ->middleware(['web', 'throttle:10,60'])
+        ->middleware(['web', 'throttle:30,1'])
         ->name('tools.smart-url-shortener.create');
     }
 
