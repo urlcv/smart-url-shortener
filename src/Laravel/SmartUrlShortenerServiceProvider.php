@@ -90,7 +90,7 @@ class SmartUrlShortenerServiceProvider extends ServiceProvider
     private function registerStatsRoute(): void
     {
         Route::get(
-            '/tools/smart-url-shortener/stats/{slug}',
+            '/l/{slug}/stats',
             function (string $slug) {
                 $link = ShortLink::where('slug', $slug)->firstOrFail();
 

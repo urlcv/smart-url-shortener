@@ -145,7 +145,7 @@
             <div class="bg-gray-50 border border-gray-200 rounded-xl p-4" x-init="pollStats()">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Link stats</span>
-                    <span class="text-[10px] text-gray-400">Auto-refreshes</span>
+                    <span class="text-[10px] text-gray-400">Auto-refreshes every 10s</span>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                     <div class="text-center">
@@ -161,14 +161,24 @@
                         <div class="text-[11px] text-gray-500">Redirects</div>
                     </div>
                 </div>
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+                        <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        <span class="text-xs font-mono text-gray-500 truncate" x-text="result.short_url.replace('https://','').replace('http://','') + '/stats'"></span>
+                        <button type="button" @click="copyStats()" class="ml-auto shrink-0 px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" x-text="statsCopied ? 'Copied!' : 'Copy'"></button>
+                    </div>
+                    <p class="mt-1.5 text-[11px] text-gray-400">Public JSON stats endpoint — use this to check your link performance from anywhere.</p>
+                </div>
             </div>
 
         </div>
     </template>
 
-    {{-- Tip --}}
-    <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-xs text-blue-800">
-        <strong>How it works:</strong> Every short link shows a preview page first so visitors can see the destination before clicking through. This protects against phishing and hidden redirects.
+    {{-- How it works --}}
+    <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-xs text-blue-800 space-y-2">
+        <p><strong>How it works:</strong> Every short link shows a preview page first so visitors can see the destination and trust score before clicking through. This protects against phishing and hidden redirects.</p>
+        <p><strong>Click tracking:</strong> We track clicks, unique visitors (by hashed IP — no raw IPs stored), device type, and approximate country. The destination URL is never modified — no tracking params are injected. All tracking happens at the short link layer.</p>
+        <p><strong>Stats API:</strong> Every link has a public JSON stats endpoint at <span class="font-mono">urlcv.com/l/{slug}/stats</span> — bookmark it or build your own dashboard.</p>
     </div>
 </div>
 
@@ -185,6 +195,7 @@ function smartUrlShortener() {
         error: '',
         result: null,
         copied: false,
+        statsCopied: false,
         stats: { click_count: 0, unique_clicks: 0, redirects: 0 },
         statsInterval: null,
 
@@ -240,6 +251,13 @@ function smartUrlShortener() {
             setTimeout(() => this.copied = false, 2000);
         },
 
+        copyStats() {
+            if (!this.result) return;
+            navigator.clipboard.writeText(this.result.short_url + '/stats');
+            this.statsCopied = true;
+            setTimeout(() => this.statsCopied = false, 2000);
+        },
+
         createAnother() {
             if (this.statsInterval) clearInterval(this.statsInterval);
             this.url = '';
@@ -270,7 +288,7 @@ function smartUrlShortener() {
             const slug = this.result.slug;
             const fetchStats = async () => {
                 try {
-                    const res = await fetch('/tools/smart-url-shortener/stats/' + slug);
+                    const res = await fetch('/l/' + slug + '/stats');
                     if (res.ok) this.stats = await res.json();
                 } catch {}
             };
